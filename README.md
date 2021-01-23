@@ -1,5 +1,8 @@
 # PyBatchedMoments
 
+[![pypi-version](https://img.shields.io/pypi/v/batchedmoments)](https://pypi.org/project/pybatchedmoments/)
+[![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)](https://pypi.org/project/pybatchedmoments/)
+
 [PyBatchedMoments](https://github.com/sbrodehl/PyBatchedMoments) is a Python library for computing (batch-wise) sample statistics,
 such as mean, variance, standard deviation, skewness and kurtosis.
 
