@@ -196,24 +196,16 @@ class BatchedMoments:
         return self._initialized
 
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        if self.shape != other.shape:
-            return False
-        # axis is not compared, the shape of the moments is more important
-        # if self.axis != other.axis:
-        #     return False
-        if self.ddof != other.ddof:
-            return False
-        if not np.allclose(self.mean, other.mean, equal_nan=True):
-            return False
-        if not np.allclose(self.std, other.std, equal_nan=True):
-            return False
-        if not np.allclose(self.variance, other.variance, equal_nan=True):
-            return False
-        if not np.allclose(self.skewness, other.skewness, equal_nan=True):
-            return False
-        if not np.allclose(self.kurtosis, other.kurtosis, equal_nan=True):
+        if (  # axis is not compared, the shape of the moments is more important
+            not isinstance(other, self.__class__)
+            or self.shape != other.shape
+            or self.ddof != other.ddof
+            or not np.allclose(self.mean, other.mean, equal_nan=True)
+            or not np.allclose(self.std, other.std, equal_nan=True)
+            or not np.allclose(self.variance, other.variance, equal_nan=True)
+            or not np.allclose(self.skewness, other.skewness, equal_nan=True)
+            or not np.allclose(self.kurtosis, other.kurtosis, equal_nan=True)
+        ):
             return False
         return True
 
