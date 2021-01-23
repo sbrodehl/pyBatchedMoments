@@ -200,7 +200,10 @@ class BatchedMoments:
             not isinstance(other, self.__class__)
             or self.shape != other.shape
             or self.ddof != other.ddof
-            or not np.allclose(self.mean, other.mean, equal_nan=True)
+        ):
+            return False
+        if (  # check values of moments
+            not np.allclose(self.mean, other.mean, equal_nan=True)
             or not np.allclose(self.std, other.std, equal_nan=True)
             or not np.allclose(self.variance, other.variance, equal_nan=True)
             or not np.allclose(self.skewness, other.skewness, equal_nan=True)
