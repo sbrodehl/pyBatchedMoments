@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Autoadd release Tags
-        uses: sbrodehl/action-autotag
+        uses: sbrodehl/action-autotag@master
         id: autotag
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
