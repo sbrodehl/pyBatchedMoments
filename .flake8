@@ -1,0 +1,14 @@
+[flake8]
+max-complexity = 10
+max-line-length = 127
+exclude =
+    .git,
+    __pycache__,
+    docs,
+    venv,
+    build,
+    dist,
+    .pytest_cache
+per-file-ignores =
+    # E221 multiple spaces before operator
+    src/batchedmoments/__init__.py: E221
