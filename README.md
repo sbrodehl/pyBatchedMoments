@@ -16,6 +16,7 @@ pip install batchedmoments
 ```
 
 ## Example
+
 ```python
 from batchedmoments import BatchedMoments
 
