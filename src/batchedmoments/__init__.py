@@ -253,6 +253,15 @@ class BatchedMoments:
         m4 += delta4 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n) / (n * n * n)
         m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
         m4 += 4.0 * delta * (self._n * other._m3 - other._n * self._m3) / n
+        # check types
+        if not isinstance(m1, np.ndarray):
+            m1 = np.array(m1)
+        if not isinstance(m2, np.ndarray):
+            m2 = np.array(m2)
+        if not isinstance(m3, np.ndarray):
+            m3 = np.array(m3)
+        if not isinstance(m4, np.ndarray):
+            m4 = np.array(m4)
         return m1, m2, m3, m4
 
     @staticmethod
