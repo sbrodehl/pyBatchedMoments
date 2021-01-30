@@ -239,10 +239,14 @@ class BatchedMoments:
         delta2 = delta * delta
         delta3 = delta2 * delta
         delta4 = delta2 * delta2
+        # m1
         m1 = (self._n * self._m1 + other._n * other._m1) / n
+        # m2
         m2 = self._m2 + other._m2 + delta2 * self._n * other._n / n
+        # m3
         m3 = self._m3 + other._m3 + delta3 * self._n * other._n * (self._n - other._n) / (n * n)
         m3 += 3.0 * delta * (self._n * other._m2 - other._n * self._m2) / n
+        # m4
         m4 = self._m4 + other._m4
         m4 += delta4 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n) / (n * n * n)
         m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
