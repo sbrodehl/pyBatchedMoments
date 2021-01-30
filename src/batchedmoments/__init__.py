@@ -225,7 +225,7 @@ class BatchedMoments:
         # perform update
         return self.update(x)
 
-    def _compute_moments(self, other: "BatchedMoments") -> tuple:
+    def _combine_moments(self, other: "BatchedMoments") -> tuple:
         """Computes combined moments of 'self' and 'other'.
 
         Args:
@@ -271,7 +271,7 @@ class BatchedMoments:
         if self.axis != other.axis:
             warnings.warn("Axis in `add` method differ.", RuntimeWarning)
 
-        self._m1, self._m2, self._m3, self._m4 = self._compute_moments(other)
+        self._m1, self._m2, self._m3, self._m4 = self._combine_moments(other)
         self._n = self._n + other._n
         return self
 
