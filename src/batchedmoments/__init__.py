@@ -246,13 +246,13 @@ class BatchedMoments:
         m2 += delta2 * self._n * other._n / n
         # m3
         m3 = self._m3 + other._m3
-        m3 += delta3 * self._n * other._n * (self._n - other._n) / (n * n)
         m3 += 3.0 * delta * (self._n * other._m2 - other._n * self._m2) / n
+        m3 += delta3 * self._n * other._n * (self._n - other._n) / (n * n)
         # m4
         m4 = self._m4 + other._m4
-        m4 += delta4 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n) / (n * n * n)
-        m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
         m4 += 4.0 * delta * (self._n * other._m3 - other._n * self._m3) / n
+        m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
+        m4 += delta4 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n) / (n * n * n)
         # check types
         if not isinstance(m1, np.ndarray):
             m1 = np.array(m1)
