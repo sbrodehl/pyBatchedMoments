@@ -86,6 +86,17 @@ with Pool(processes=multiprocessing.cpu_count()) as pool:
 # bm.mean, bm.std, ...
 ```
 
+### Reduction of Axes
+
+The `axis=...` keyword allows specifying axis or axes along which the sample statistics are computed.
+The default (`None`) is to compute the sample statistics of the flattened array.
+
+Working with data of shape `(1000, 3, 28, 28)` and specifying `axis=0` the computed statistics will have shape `(3, 28, 28)`.
+If `axis=(0, 2, 3)` the computed statistics will have shape `(3,)`.
+
+Using the `reduce` method the shape of the computed statistics can be further reduced at a later stage.
+E.g. with data of shape `(1000, 3, 28, 28)` and `axis=(2, 3)` the computed statistics will have shape `(1000, 3)`.
+By using `reduce(0)` the computed statistics will be reduced to shape `(3,)`.
 
 ## License
 
