@@ -27,7 +27,7 @@ git clone https://github.com/sbrodehl/pyBatchedMoments.git
 pip install -e pyBatchedMoments
 ```
 
-## Example
+## Examples
 
 We start with the simple use case of sample statistics of some (random) numbers.
 
@@ -46,6 +46,8 @@ bm.std
 The result is equivalent to [numpy](https://numpy.org/doc/stable/reference/routines.statistics.html) (`mean`, `std` and `var`)
 and [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) (`skew` and `kurtosis`).
 
+### Batched Computation
+
 Where [pyBatchedMoments][pyBM-gh] really shines is when the data is not available at once.
 In this case, the data can be batched (split in _usable_ parts) and the statistics can be computed batch-wise.
 
@@ -63,6 +65,24 @@ for batch in data_iter:
 bm.mean
 bm.std
 ...
+```
+
+### Distributed / Parallel Computation
+
+The sample statistics of single batches can be computed independently and later be combined with the `add` operator.
+The following example shows a multiprocessing use case, but the batches can be computed distributed among different
+computers (nodes) as well.
+
+```python
+import multiprocessing
+from multiprocessing import Pool
+from batchedmoments import BatchedMoments
+
+data = iter(list(range(n, n + 10)) for n in range(0, 1000, 10))
+bm = BatchedMoments()(next(data))
+with Pool(processes=multiprocessing.cpu_count()) as pool:
+    for dbm in pool.imap_unordered(BatchedMoments(), data):
+        bm += dbm
 ```
 
 
