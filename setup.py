@@ -40,7 +40,7 @@ CLASSIFIERS = [
 ]
 PACKAGES = setuptools.find_packages(where="src")
 find_meta = partial(find_meta, meta_file=read((Path("src") / str(next(iter(PACKAGES))) / "__init__.py").resolve()))
-INSTALL_REQUIRES = read("requirements.txt").strip().split("\n")
+INSTALL_REQUIRES = ["numpy", "scipy", "pytest"]
 NAME = find_meta("title")
 KEYWORDS = [NAME]
 
