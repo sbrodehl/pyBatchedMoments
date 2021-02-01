@@ -39,9 +39,7 @@ bm = BatchedMoments()
 bm(data)
 
 # use computed values
-bm.mean
-bm.std
-...
+# bm.mean, bm.std, ...
 ```
 The result is equivalent to [numpy](https://numpy.org/doc/stable/reference/routines.statistics.html) (`mean`, `std` and `var`)
 and [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) (`skew` and `kurtosis`).
@@ -49,7 +47,7 @@ and [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) (`skew`
 ### Batched Computation
 
 Where [pyBatchedMoments][pyBM-gh] really shines is when the data is not available at once.
-In this case, the data can be batched (split in _usable_ parts) and the statistics can be computed batch-wise.
+In this case, the data can be batched (split in _usable_ parts), and the statistics can be computed batch-wise.
 
 ```python
 from batchedmoments import BatchedMoments
@@ -62,9 +60,7 @@ for batch in data_iter:
     bm(batch)
 
 # use computed values
-bm.mean
-bm.std
-...
+# bm.mean, bm.std, ...
 ```
 
 ### Distributed / Parallel Computation
@@ -80,9 +76,13 @@ from batchedmoments import BatchedMoments
 
 data = iter(list(range(n, n + 10)) for n in range(0, 1000, 10))
 bm = BatchedMoments()(next(data))
+
 with Pool(processes=multiprocessing.cpu_count()) as pool:
     for dbm in pool.imap_unordered(BatchedMoments(), data):
         bm += dbm
+
+# use computed values
+# bm.mean, bm.std, ...
 ```
 
 
