@@ -164,7 +164,7 @@ class BatchedMoments:
         # update M4
         self._m4 += m4_b
         self._m4 += 4.0 * delta * (n_a * m3_b - n_b * self._m3) / n
-        self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b - n_b * n_b * self._m2) / (n * n)
+        self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b + n_b * n_b * self._m2) / (n * n)
         self._m4 += delta4 * n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b) / (n * n * n)
         # update M3
         self._m3 += m3_b
