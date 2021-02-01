@@ -98,6 +98,38 @@ Using the `reduce` method the shape of the computed statistics can be further re
 E.g. with data of shape `(1000, 3, 28, 28)` and `axis=(2, 3)` the computed statistics will have shape `(1000, 3)`.
 By using `reduce(0)` the computed statistics will be reduced to shape `(3,)`.
 
+### Machine Learning Use Case
+
+A prime example, where [pyBatchedMoments][pyBM-gh] can be used, is to compute sample statistics of machine learning data sets.
+Here we use [torchvision.datasets](https://pytorch.org/docs/stable/torchvision/datasets.html) to compute sample mean and sample standard deviation needed for normalization of the data set.
+
+```python
+from torch.utils.data import DataLoader
+from torchvision import transforms, datasets
+from batchedmoments import BatchedMoments
+
+image_data = datasets.FashionMNIST(
+    "/tmp/FashionMNIST",
+    download=True,
+    train=True,
+    transform=transforms.Compose([
+        transforms.ToTensor()
+    ])
+)
+data_loader = DataLoader(
+    image_data,
+    batch_size=1024,
+)
+
+bm = BatchedMoments(axis=(0, 2, 3))
+for imgs, _ in data_loader:
+    bm(imgs.numpy())
+
+# use computed values
+# bm.mean, bm.std, ...
+# mean=0.28604060219395394 std=0.35302424954262396
+```
+
 ## License
 
 pyBatchedMoments uses a MIT-style license, as found in [LICENSE](LICENSE) file.
