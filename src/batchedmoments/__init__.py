@@ -148,7 +148,7 @@ class BatchedMoments:
         self._m4 += m4_b
         self._m4 += 4.0 * delta * (n_a * m3_b - n_b * self._m3) / n
         self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b + n_b * n_b * self._m2) / (n * n)
-        self._m4 += delta4 * n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b) / (n * n * n)
+        self._m4 += delta4 * np.array(1.0 * (n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b)) / (n * n * n), dtype=np.float64)
         # update M3
         self._m3 += m3_b
         self._m3 += 3.0 * delta * (n_a * m2_b - n_b * self._m2) / n
@@ -239,7 +239,7 @@ class BatchedMoments:
         m4 = self._m4 + other._m4
         m4 += 4.0 * delta * (self._n * other._m3 - other._n * self._m3) / n
         m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
-        m4 += delta4 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n) / (n * n * n)
+        m4 += delta4 * np.array((1.0 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n)) / (n * n * n), dtype=np.float64)
         # check types
         if not isinstance(m1, np.ndarray):
             m1 = np.array(m1)
