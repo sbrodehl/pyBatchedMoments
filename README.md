@@ -1,11 +1,10 @@
-# PyBatchedMoments
+# pyBatchedMoments
 
-[![pypi-version](https://img.shields.io/pypi/v/batchedmoments)](https://pypi.org/project/batchedmoments/)
-[![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)](https://pypi.org/project/batchedmoments/)
-[![Build, Test & Deploy to PyPI](https://github.com/sbrodehl/PyBatchedMoments/workflows/Build,%20Test%20&%20Deploy%20to%20PyPI/badge.svg)](https://github.com/sbrodehl/PyBatchedMoments/actions?query=workflow%3A%22Build%2C+Test+%26+Deploy+to+PyPI%22)
+[![pypi-version](https://img.shields.io/pypi/v/batchedmoments)][pypi]
+[![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)][pypi]
+[![Build, Test & Deploy to PyPI](https://github.com/sbrodehl/pyBatchedMoments/workflows/Build,%20Test%20&%20Deploy%20to%20PyPI/badge.svg)](https://github.com/sbrodehl/PyBatchedMoments/actions?query=workflow%3A%22Build%2C+Test+%26+Deploy+to+PyPI%22)
 
-
-[PyBatchedMoments](https://github.com/sbrodehl/PyBatchedMoments) is a Python library for computing (batch-wise) sample statistics,
+[pyBatchedMoments][pyBM-gh] is a Python library for computing (batch-wise) sample statistics,
 such as mean, variance, standard deviation, skewness and kurtosis.
 
 In certain applications it is needed to compute simple statistics of a population, but with _textbook_ formulae
@@ -33,3 +32,7 @@ bm(data)
 bm.mean
 bm.std
 ```
+
+
+[pypi]: https://pypi.org/project/batchedmoments
+[pyBM-gh]: https://github.com/sbrodehl/pyBatchedMoments
