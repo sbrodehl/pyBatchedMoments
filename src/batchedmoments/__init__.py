@@ -316,7 +316,7 @@ class BatchedMoments:
              https://doi.org/10.1111/1467-9884.00122
 
         Returns:
-            the skewness
+            the sample skewness
         """
         try:
             return np.sqrt(1.0 * self._n) * self._m3 / pow(self._m2, 1.5)
@@ -334,7 +334,7 @@ class BatchedMoments:
              https://doi.org/10.1111/1467-9884.00122
 
         Returns:
-            the kurtosis
+            the sample kurtosis
         """
         try:
             return 1.0 * self._n * self._m4 / (self._m2 * self._m2) - 3.0
