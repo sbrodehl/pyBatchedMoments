@@ -124,11 +124,11 @@ class BatchedMoments:
         return np.divide(t, n, dtype=np.float64).sum(axis=axis)
 
     def update(self, t: np.ndarray) -> "BatchedMoments":
-        n_b = np.array(
+        n_b = int(np.array(
             [t.shape[x] for x in self.axis]
             if self.axis is not None
             else list(t.shape)
-        ).prod(dtype=int)
+        ).prod(dtype=int).item())
         # the following is equivalent to `np.mean(t, axis=self.axis)`
         m1_b = self._compute_ith_moment(t, 1, axis=self.axis)
         # the following is equivalent to `np.var(t, axis=self.axis)`
