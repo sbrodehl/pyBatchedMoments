@@ -1,7 +1,7 @@
 # PyBatchedMoments
 
-[![pypi-version](https://img.shields.io/pypi/v/batchedmoments)](https://pypi.org/project/pybatchedmoments/)
-[![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)](https://pypi.org/project/pybatchedmoments/)
+[![pypi-version](https://img.shields.io/pypi/v/batchedmoments)](https://pypi.org/project/batchedmoments/)
+[![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)](https://pypi.org/project/batchedmoments/)
 [![Build, Test & Deploy to PyPI](https://github.com/sbrodehl/PyBatchedMoments/workflows/Build,%20Test%20&%20Deploy%20to%20PyPI/badge.svg)](https://github.com/sbrodehl/PyBatchedMoments/actions?query=workflow%3A%22Build%2C+Test+%26+Deploy+to+PyPI%22)
 
 
