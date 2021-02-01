@@ -146,32 +146,37 @@ class BatchedMoments:
         # the following is equivalent to `np.mean(t, axis=self.axis)`
         m1_b = self._compute_ith_moment(t, 1, axis=self.axis)
         # the following is equivalent to `np.var(t, axis=self.axis)`
-        m2_b = self._compute_ith_moment(t, 2, m_1=m1_b, axis=self.axis)
+        m2_b = n_b * self._compute_ith_moment(t, 2, m_1=m1_b, axis=self.axis)
         # higher order moments for custom shapes
-        m3_b = self._compute_ith_moment(t, 3, m_1=m1_b, axis=self.axis)
-        m4_b = self._compute_ith_moment(t, 4, m_1=m1_b, axis=self.axis)
+        m3_b = n_b * self._compute_ith_moment(t, 3, m_1=m1_b, axis=self.axis)
+        m4_b = n_b * self._compute_ith_moment(t, 4, m_1=m1_b, axis=self.axis)
+
         if self._frozen:
             self._n -= n_b
+
         n_a = self._n
-        self._n += n_b
-        n = self._n  # rename for convenience
-        delta_m1 = m1_b - self._m1
-        delta_n = n_b * delta_m1 / n
-        term1 = delta_m1 * delta_n * n_a
-        # update M1
-        self._m1 += delta_n
+        n = n_a + n_b
+        delta = m1_b - self._m1
+        delta2 = delta * delta
+        delta3 = delta2 * delta
+        delta4 = delta2 * delta2
+
         # update M4
-        self._m4 += n_b * m4_b
-        self._m4 += 4 * n_a * n_b * delta_m1 * (m3_b - self._m3) / n
-        self._m4 += 6 * n_a * n_b * delta_m1 * delta_m1 * (n_a * m2_b - n_b * self._m2) / (n * n)
-        self._m4 += term1 * delta_m1 * delta_m1 * (n_a * n_a - n_a * n_b + n_b * n_b) / (n * n)
+        self._m4 += m4_b
+        self._m4 += 4.0 * delta * (n_a * m3_b - n_b * self._m3) / n
+        self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b - n_b * n_b * self._m2) / (n * n)
+        self._m4 += delta4 * n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b) / (n * n * n)
         # update M3
-        self._m3 += n_b * m3_b
-        self._m3 += 3 * n_a * n_b * delta_m1 * (m2_b - self._m2) / n
-        self._m3 += term1 * delta_m1 * (n_a - n_b) / n
+        self._m3 += m3_b
+        self._m3 += 3.0 * delta * (n_a * m2_b - n_b * self._m2) / n
+        self._m3 += delta3 * n_a * n_b * (n_a - n_b) / (n * n)
         # update M2
-        self._m2 += n_b * m2_b
-        self._m2 += term1
+        self._m2 += m2_b
+        self._m2 += delta2 * n_a * n_b / n
+        # update M1
+        self._m1 += delta * n_b / n
+        # increment seen samples
+        self._n += n_b
         return self
 
     def _initialize(self, shape: Union[tuple, None]) -> bool:
