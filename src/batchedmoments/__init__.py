@@ -39,7 +39,6 @@ class BatchedMoments:
         """
         self._n: int = 0
         self._ddof = ddof
-        self._frozen: bool = False
         self.axis: Union[tuple, None] = None
         if axis is not None:
             self.axis = axis if isinstance(axis, tuple) else tuple([axis])
@@ -68,19 +67,6 @@ class BatchedMoments:
 
     def __len__(self):
         return self._n
-
-    def freeze(self) -> "BatchedMoments":
-        """Stops counting the number of seen elements."""
-        self._frozen = True
-        return self
-
-    def unfreeze(self) -> "BatchedMoments":
-        """Starts counting the number of seen elements (again)."""
-        self._frozen = False
-        return self
-
-    def is_frozen(self) -> bool:
-        return self._frozen
 
     def reduce(self, axis: Union[tuple, int] = None) -> "BatchedMoments":
         """Reduce the moments along the given axis.
@@ -151,9 +137,6 @@ class BatchedMoments:
         m3_b = n_b * self._compute_ith_moment(t, 3, m_1=m1_b, axis=self.axis)
         m4_b = n_b * self._compute_ith_moment(t, 4, m_1=m1_b, axis=self.axis)
 
-        if self._frozen:
-            self._n -= n_b
-
         n_a = self._n
         n = n_a + n_b
         delta = m1_b - self._m1
@@ -185,7 +168,6 @@ class BatchedMoments:
         """
         # reset stats
         self._n = 0
-        self._frozen = False
         self._m1 = self._m2 = self._m3 = self._m4 = None
         non_none_axis = self.axis if self.axis is not None else []
         self._moments_shape = tuple([
@@ -360,4 +342,4 @@ class BatchedMoments:
             return None
 
     def __repr__(self) -> str:
-        return f"<BatchedMoments ({self._n}{'=F' if self._frozen else ''}): {str(self.mean)} ± {str(self.std)}>"
+        return f"<BatchedMoments ({self._n}): {str(self.mean)} ± {str(self.std)}>"
