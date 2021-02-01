@@ -3,7 +3,7 @@ from typing import Union, Iterable
 import warnings
 import numpy as np
 
-__version__       = "0.0.1"
+__version__       = "0.1.0"
 __title__         = "batchedmoments"
 __description__   = "Computes (batch-wise) sample statistics."
 __url__           = "https://github.com/sbrodehl/PyBatchedMoments"
