@@ -2,7 +2,7 @@
 
 [![pypi-version](https://img.shields.io/pypi/v/batchedmoments)][pypi]
 [![python-version](https://img.shields.io/pypi/pyversions/batchedmoments)][pypi]
-[![Build, Test & Deploy to PyPI](https://github.com/sbrodehl/pyBatchedMoments/workflows/Build,%20Test%20&%20Deploy%20to%20PyPI/badge.svg)](https://github.com/sbrodehl/PyBatchedMoments/actions?query=workflow%3A%22Build%2C+Test+%26+Deploy+to+PyPI%22)
+[![Build, Test & Deploy](https://github.com/sbrodehl/pyBatchedMoments/workflows/Build,%20Test%20&%20Deploy%20to%20PyPI/badge.svg)](https://github.com/sbrodehl/PyBatchedMoments/actions?query=workflow%3A%22Build%2C+Test+%26+Deploy+to+PyPI%22)
 
 [pyBatchedMoments][pyBM-gh] is a Python library for computing (batch-wise) sample statistics,
 such as mean, variance, standard deviation, skewness and kurtosis.
@@ -10,16 +10,26 @@ such as mean, variance, standard deviation, skewness and kurtosis.
 In certain applications it is needed to compute simple statistics of a population, but with _textbook_ formulae
 the calculation can suffer from loss of precision and can be numerically unstable.
 Additionally, for large populations only a single pass over the values is feasible, therefore,
-an incremental (_batch-wise_) approach is desirable.
+an incremental (_batch-wise_) approach is needed.
 
-## Install
+## Installation
 
-To install the current release
+To install the current release, run
 ```shell
 pip install batchedmoments
 ```
 
+### From Source
+
+To install the latest development version (e.g. in [_editable mode_](https://pip.pypa.io/en/stable/reference/pip_install/#cmdoption-e)), run
+```shell
+git clone https://github.com/sbrodehl/pyBatchedMoments.git
+pip install -e pyBatchedMoments
+```
+
 ## Example
+
+We start with the simple use case of sample statistics of some (random) numbers.
 
 ```python
 from batchedmoments import BatchedMoments
@@ -31,7 +41,34 @@ bm(data)
 # use computed values
 bm.mean
 bm.std
+...
 ```
+The result is equivalent to [numpy](https://numpy.org/doc/stable/reference/routines.statistics.html) (`mean`, `std` and `var`)
+and [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) (`skew` and `kurtosis`).
+
+Where [pyBatchedMoments][pyBM-gh] really shines is when the data is not available at once.
+In this case, the data can be batched (split in _usable_ parts) and the statistics can be computed batch-wise.
+
+```python
+from batchedmoments import BatchedMoments
+
+# a generator function which returns batches of data
+data_iter = iter(list(range(n, n + 10)) for n in range(0, 1000, 10))
+
+bm = BatchedMoments()
+for batch in data_iter:
+    bm(batch)
+
+# use computed values
+bm.mean
+bm.std
+...
+```
+
+
+## License
+
+pyBatchedMoments uses a MIT-style license, as found in [LICENSE](LICENSE) file.
 
 
 [pypi]: https://pypi.org/project/batchedmoments
