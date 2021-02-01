@@ -74,9 +74,10 @@ import multiprocessing
 from multiprocessing import Pool
 from batchedmoments import BatchedMoments
 
+# a generator function which returns batches of data
 data = iter(list(range(n, n + 10)) for n in range(0, 1000, 10))
+# create object and initialize with first batch of data
 bm = BatchedMoments()(next(data))
-
 with Pool(processes=multiprocessing.cpu_count()) as pool:
     for dbm in pool.imap_unordered(BatchedMoments(), data):
         bm += dbm
