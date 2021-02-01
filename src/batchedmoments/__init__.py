@@ -112,7 +112,7 @@ class BatchedMoments:
             [t.shape[x] for x in axis]
             if axis is not None
             else list(t.shape)
-        ).prod(dtype=int)
+        ).prod(dtype=np.float64)
         if m_1 is not None:
             t = t.astype(m_1.dtype)
             if axis is not None:
@@ -121,7 +121,7 @@ class BatchedMoments:
         tt = t.copy()
         for _ in range(p - 1):
             t = np.multiply(t, tt, out=t)
-        return t.sum(axis=axis) / n
+        return np.divide(t, n, dtype=np.float64).sum(axis=axis)
 
     def update(self, t: np.ndarray) -> "BatchedMoments":
         n_b = np.array(
