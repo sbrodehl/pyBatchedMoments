@@ -271,7 +271,7 @@ class BatchedMoments:
         if self.shape != other.shape:
             raise RuntimeError("Won't broadcast shapes. You are on your own, sorry.")
         if self.axis != other.axis:
-            warnings.warn("Axis in `add` method differ.", RuntimeWarning)
+            warnings.warn("Axis in `__iadd__` differs.", RuntimeWarning)
 
         self._m1, self._m2, self._m3, self._m4 = self._combine_moments(other)
         self._n = self._n + other._n
