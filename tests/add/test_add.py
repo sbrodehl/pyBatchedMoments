@@ -36,3 +36,11 @@ def test_uninitialized_add():
     batched += full
     add = BatchedMoments() + full
     assert full == batched == add
+
+
+def test_commutativity_add():
+    data = list(range(100))
+    full = BatchedMoments()(data)
+    add1 = BatchedMoments() + full
+    add2 = full + BatchedMoments()
+    assert add1 == full == add2
