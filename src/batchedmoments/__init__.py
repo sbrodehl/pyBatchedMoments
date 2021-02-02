@@ -262,7 +262,7 @@ class BatchedMoments:
         return BatchedMoments(other.axis, other.shape, ddof=other.ddof)
 
     def __iadd__(self, other: "BatchedMoments") -> "BatchedMoments":
-        # modify and return 'self'
+        """Add `other` instance to `self` and return modified `self`."""
         if not other._initialized:
             raise RuntimeError("Object not initialized!")
         if not self._initialized:
