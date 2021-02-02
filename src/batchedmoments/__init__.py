@@ -26,19 +26,26 @@ class BatchedMoments:
         std         - returns the sample standard deviation
         skewness    - returns the sample skewness
         kurtosis    - return the sample kurtosis
-
     """
 
-    def __init__(self, axis: Union[tuple, int] = None, shape: tuple = None, ddof: int = 0):
+    def __init__(
+            self,
+            axis: Union[tuple, int] = None,
+            shape: tuple = None,
+            ddof: int = 0,
+            higher_order_moments: bool = True
+    ):
         """
         Args:
             axis: Axis to be reduced. If None, a scalar value is computed (default)
             shape: Shape of the moments. If None, first update will initialize and set shape.
             ddof: "Delta Degrees of Freedom": the divisor used in the calculation is
                     ``N - ddof``, where ``N`` represents the number of elements. (default is zero)
+            higher_order_moments: Dis-/Enable computation of hight order moments (skewness and kurtosis). (default is True)
         """
         self._n: int = 0
         self._ddof = ddof
+        self._higher_order_moments = higher_order_moments
         self.axis: Union[tuple, None] = None
         if axis is not None:
             self.axis = axis if isinstance(axis, tuple) else tuple([axis])
@@ -85,15 +92,17 @@ class BatchedMoments:
         ax = axis.pop()
         _w = BatchedMoments(
             tuple(sorted(self.axis + tuple([ax]))),
-            tuple([d for _i, d in enumerate(self.shape) if _i != ax])
+            tuple([d for _i, d in enumerate(self.shape) if _i != ax]),
+            higher_order_moments=self._higher_order_moments
         )
         for _i in range(self.shape[ax]):
             wi = BatchedMoments.from_(_w)
             wi._n = self._n
             wi._m1 = self._m1.take(_i, axis=ax)
             wi._m2 = self._m2.take(_i, axis=ax)
-            wi._m3 = self._m3.take(_i, axis=ax)
-            wi._m4 = self._m4.take(_i, axis=ax)
+            if self._higher_order_moments:
+                wi._m3 = self._m3.take(_i, axis=ax)
+                wi._m4 = self._m4.take(_i, axis=ax)
             _w += wi
         if len(axis) > 0:
             return _w.reduce(tuple(axis))
@@ -134,25 +143,26 @@ class BatchedMoments:
         # the following is equivalent to `np.var(t, axis=self.axis)`
         m2_b = n_b * self._compute_ith_moment(t, 2, m_1=m1_b, axis=self.axis)
         # higher order moments for custom shapes
-        m3_b = n_b * self._compute_ith_moment(t, 3, m_1=m1_b, axis=self.axis)
-        m4_b = n_b * self._compute_ith_moment(t, 4, m_1=m1_b, axis=self.axis)
+        if self._higher_order_moments:
+            m3_b = n_b * self._compute_ith_moment(t, 3, m_1=m1_b, axis=self.axis)
+            m4_b = n_b * self._compute_ith_moment(t, 4, m_1=m1_b, axis=self.axis)
 
         n_a = self._n
         n = n_a + n_b
         delta = m1_b - self._m1
         delta2 = delta * delta
-        delta3 = delta2 * delta
-        delta4 = delta2 * delta2
-
-        # update M4
-        self._m4 += m4_b
-        self._m4 += 4.0 * delta * (n_a * m3_b - n_b * self._m3) / n
-        self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b + n_b * n_b * self._m2) / (n * n)
-        self._m4 += delta4 * np.array(1.0 * (n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b)) / (n * n * n), dtype=np.float64)
-        # update M3
-        self._m3 += m3_b
-        self._m3 += 3.0 * delta * (n_a * m2_b - n_b * self._m2) / n
-        self._m3 += delta3 * n_a * n_b * (n_a - n_b) / (n * n)
+        if self._higher_order_moments:
+            delta3 = delta2 * delta
+            delta4 = delta2 * delta2
+            # update M4
+            self._m4 += m4_b
+            self._m4 += 4.0 * delta * (n_a * m3_b - n_b * self._m3) / n
+            self._m4 += 6.0 * delta2 * (n_a * n_a * m2_b + n_b * n_b * self._m2) / (n * n)
+            self._m4 += delta4 * np.array(1.0 * (n_a * n_b * (n_a * n_a - n_a * n_b + n_b * n_b)) / (n * n * n), dtype=np.float64)
+            # update M3
+            self._m3 += m3_b
+            self._m3 += 3.0 * delta * (n_a * m2_b - n_b * self._m2) / n
+            self._m3 += delta3 * n_a * n_b * (n_a - n_b) / (n * n)
         # update M2
         self._m2 += m2_b
         self._m2 += delta2 * n_a * n_b / n
@@ -177,8 +187,9 @@ class BatchedMoments:
         ] if self.axis is not None else [])
         self._m1 = np.zeros(self._moments_shape)
         self._m2 = np.zeros(self._moments_shape)
-        self._m3 = np.zeros(self._moments_shape)
-        self._m4 = np.zeros(self._moments_shape)
+        if self._higher_order_moments:
+            self._m3 = np.zeros(self._moments_shape)
+            self._m4 = np.zeros(self._moments_shape)
         self._initialized = True
         return self._initialized
 
@@ -189,12 +200,20 @@ class BatchedMoments:
             or self.ddof != other.ddof
         ):
             return False
-        if (  # check values of moments
+        if (  # check values of (lower order) moments
             not np.allclose(self.mean, other.mean, equal_nan=True)
             or not np.allclose(self.std, other.std, equal_nan=True)
             or not np.allclose(self.variance, other.variance, equal_nan=True)
-            or not np.allclose(self.skewness, other.skewness, equal_nan=True)
-            or not np.allclose(self.kurtosis, other.kurtosis, equal_nan=True)
+        ):
+            return False
+        if (  # check values of (higher order) moments
+            (  # if any object has them enabled
+                self._higher_order_moments
+                or other._higher_order_moments
+            ) and (
+                not np.allclose(self.skewness, other.skewness, equal_nan=True)
+                or not np.allclose(self.kurtosis, other.kurtosis, equal_nan=True)
+            )
         ):
             return False
         return True
@@ -231,24 +250,30 @@ class BatchedMoments:
         # m2
         m2 = self._m2 + other._m2
         m2 += delta2 * self._n * other._n / n
-        # m3
-        m3 = self._m3 + other._m3
-        m3 += 3.0 * delta * (self._n * other._m2 - other._n * self._m2) / n
-        m3 += delta3 * self._n * other._n * (self._n - other._n) / (n * n)
-        # m4
-        m4 = self._m4 + other._m4
-        m4 += 4.0 * delta * (self._n * other._m3 - other._n * self._m3) / n
-        m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
-        m4 += delta4 * np.array((1.0 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n)) / (n * n * n), dtype=np.float64)
+        # initialize return values
+        m3 = m4 = None
+        if self._higher_order_moments and other._higher_order_moments:
+            # TODO: what happens if only one has them enabled?
+            #  For now, only combined iff both are enabled!
+            # m3
+            m3 = self._m3 + other._m3
+            m3 += 3.0 * delta * (self._n * other._m2 - other._n * self._m2) / n
+            m3 += delta3 * self._n * other._n * (self._n - other._n) / (n * n)
+            # m4
+            m4 = self._m4 + other._m4
+            m4 += 4.0 * delta * (self._n * other._m3 - other._n * self._m3) / n
+            m4 += 6.0 * delta2 * (self._n * self._n * other._m2 + other._n * other._n * self._m2) / (n * n)
+            m4 += delta4 * np.array((1.0 * self._n * other._n * (self._n * self._n - self._n * other._n + other._n * other._n)) / (n * n * n), dtype=np.float64)
+            # check types
+            if not isinstance(m3, np.ndarray):
+                m3 = np.array(m3)
+            if not isinstance(m4, np.ndarray):
+                m4 = np.array(m4)
         # check types
         if not isinstance(m1, np.ndarray):
             m1 = np.array(m1)
         if not isinstance(m2, np.ndarray):
             m2 = np.array(m2)
-        if not isinstance(m3, np.ndarray):
-            m3 = np.array(m3)
-        if not isinstance(m4, np.ndarray):
-            m4 = np.array(m4)
         return m1, m2, m3, m4
 
     @staticmethod
@@ -256,7 +281,12 @@ class BatchedMoments:
         """Create and initiate class from another instance."""
         if not other._initialized:
             raise RuntimeError("Can't initialize from non-initialized object.")
-        return BatchedMoments(other.axis, other.shape, ddof=other.ddof)
+        return BatchedMoments(
+            other.axis,
+            other.shape,
+            ddof=other.ddof,
+            higher_order_moments=other._higher_order_moments
+        )
 
     def __iadd__(self, other: "BatchedMoments") -> "BatchedMoments":
         # modify and return 'self'
