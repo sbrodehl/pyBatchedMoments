@@ -93,7 +93,8 @@ class BatchedMoments:
         _w = BatchedMoments(
             tuple(sorted(self.axis + tuple([ax]))),
             tuple([d for _i, d in enumerate(self.shape) if _i != ax]),
-            higher_order_moments=self._higher_order_moments
+            higher_order_moments=self._higher_order_moments,
+            ddof=self.ddof,
         )
         for _i in range(self.shape[ax]):
             wi = BatchedMoments.from_(_w)
