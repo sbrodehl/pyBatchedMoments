@@ -261,9 +261,9 @@ class BatchedMoments:
 
     def __iadd__(self, other: "BatchedMoments") -> "BatchedMoments":
         # modify and return 'self'
-        if not self._initialized:
-            raise RuntimeError("Object not initialized!")
         if not other._initialized:
+            raise RuntimeError("Object not initialized!")
+        if not self._initialized:
             raise RuntimeError("Object not initialized!")
         if self.shape != other.shape:
             raise RuntimeError("Won't broadcast shapes. You are on your own, sorry.")
