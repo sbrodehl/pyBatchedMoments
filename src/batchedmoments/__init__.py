@@ -49,21 +49,23 @@ class BatchedMoments:
         self._initialized: bool = False
         self._moments_shape: Union[tuple, None] = None
         if shape is not None:  # initialization is possible
-            axis = tuple([]) if self.axis is None else self.axis
-            # data shape / dimensions must be
-            data_shape = [0] * (len(axis) + len(shape))
-            shape_idx = 0
-            for ax, _ in enumerate(data_shape):
-                # axis have fixed position
-                if ax in axis:
-                    data_shape[ax] = -1
-                else:
-                    # fill in the rest
-                    data_shape[ax] = shape[shape_idx]
-                    shape_idx += 1
-            if shape_idx != len(shape):
-                raise RuntimeError("There is something wrong with the shapes!")
-            self._initialize(tuple(data_shape))
+            self._initialize(self._infer_data_shape(shape, self.axis))
+
+    @staticmethod
+    def _infer_data_shape(moments_shape, axis):
+        axis = tuple([]) if axis is None else axis
+        # data shape / dimensions must be
+        data_shape = [0] * (len(axis) + len(moments_shape))
+        shape_idx = 0
+        for ax, _ in enumerate(data_shape):
+            if ax in axis:  # axis have fixed position
+                data_shape[ax] = -1
+            else:  # fill in the rest
+                data_shape[ax] = moments_shape[shape_idx]
+                shape_idx += 1
+        if shape_idx != len(moments_shape):
+            raise RuntimeError("There is something wrong with the shapes!")
+        return tuple(data_shape)
 
     def __len__(self):
         return self._n
