@@ -27,3 +27,11 @@ def test_batched_add():
         assert partial == batched
     full = BatchedMoments()(data)
     assert full == batched
+
+
+def test_uninitialized_add():
+    data = list(range(100))
+    batched = BatchedMoments()
+    full = BatchedMoments()(data)
+    batched += full
+    assert full == batched
