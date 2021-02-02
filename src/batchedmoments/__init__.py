@@ -266,7 +266,7 @@ class BatchedMoments:
         if not other._initialized:
             raise RuntimeError("Object not initialized!")
         if not self._initialized:
-            # `from_(...)` could be used, but `iadd` must modify `self`.
+            # `from_(...)` can't be used, because `iadd` must modify `self`.
             self._initialize(BatchedMoments._infer_data_shape(other.shape, other.axis))
         if self.shape != other.shape:
             raise RuntimeError("Won't broadcast shapes. You are on your own, sorry.")
