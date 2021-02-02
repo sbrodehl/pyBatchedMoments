@@ -34,4 +34,5 @@ def test_uninitialized_add():
     batched = BatchedMoments()
     full = BatchedMoments()(data)
     batched += full
-    assert full == batched
+    add = BatchedMoments() + full
+    assert full == batched == add

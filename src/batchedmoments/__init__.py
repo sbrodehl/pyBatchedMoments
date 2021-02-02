@@ -278,9 +278,12 @@ class BatchedMoments:
         return self
 
     def __add__(self, other: "BatchedMoments") -> "BatchedMoments":
-        added = BatchedMoments.from_(self)
-        added += self
-        added += other
+        """Return a new instance where `self` and `other` are added."""
+        added = BatchedMoments.from_(self) if self._initialized else BatchedMoments.from_(other)
+        if self._initialized:
+            added += self
+        if other._initialized:
+            added += other
         return added
 
     @property
