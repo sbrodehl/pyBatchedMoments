@@ -6,7 +6,7 @@ from batchedmoments import BatchedMoments
 
 
 def test_multiprocessing_add():
-    batchsize = 15
+    batchsize = 10
     samples = batchsize * batchsize * batchsize * batchsize
     gen1, gen2 = tee((list(range(n, n + batchsize)) for n in range(0, samples, batchsize)))
     data = iter(gen1)
